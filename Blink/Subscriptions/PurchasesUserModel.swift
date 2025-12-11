@@ -67,13 +67,8 @@ class PurchasesUserModel: ObservableObject {
   static let shared = PurchasesUserModel()
 
   private func refreshProducts() {
-    if self.blinkShellPlusProduct == nil
-        || self.classicProduct == nil
-        || self.buildBasicProduct == nil
-        || self.blinkPlusBuildBasicProduct == nil {
-      self.fetchProducts()
-      self.fetchTrialEligibility()
-    }
+    // GUTTED: No RevenueCat
+    return
   }
 
   private func refreshTokens() {
@@ -434,9 +429,8 @@ extension StoreProduct {
 @objc public class PurchasesUserModelObjc: NSObject {
 
   @objc public static func preparePurchasesUserModel() {
-    configureRevCat()
-    EntitlementsManager.shared.startUpdates()
-    _ = PurchasesUserModel.shared
+    // GUTTED: No RevenueCat init
+    return
   }
 }
 

@@ -149,24 +149,13 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   public func customerTier() -> CustomerTier {
-    if activeSubscriptions.contains(ProductBlinkShellPlusID)  || activeSubscriptions.contains(ProductBlinkPlusID)
-        || activeSubscriptions.contains(ProductBlinkPlusBuildBasicID)
-    {
-      return CustomerTier.Plus
-    }
-    if nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
-      return CustomerTier.Classic
-    }
-    if PublishingOptions.current == .testFlight {
-      return CustomerTier.TestFlight
-    }
-
-    return CustomerTier.Free
+    // GUTTED: Always Plus
+    return CustomerTier.Plus
   }
 
   public func hasActiveSubscriptions() -> Bool {
-    print(currentPlanName())
-    return customerTier() != CustomerTier.Free
+    // GUTTED: Always subscribed
+    return true
   }
   
   public func groupsCheckViolation() -> Bool {

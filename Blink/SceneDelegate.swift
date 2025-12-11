@@ -102,6 +102,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   @objc private func _showPaywallIfNeeded() {
+    // GUTTED: No paywall bullshit
+    return
+
     let entitlements = EntitlementsManager.shared
 
     let doShowPaywall = !entitlements.hasActiveSubscriptions()

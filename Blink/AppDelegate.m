@@ -46,6 +46,36 @@ extern void build_auto_start_wg_ports(void);
 extern void rebind_ports(void);
 #endif
 
+// Force linker to keep command symbols (Xcode 26 strips them otherwise)
+extern int config_main(int, char**);
+extern int help_main(int, char**);
+extern int clear_main(int, char**);
+extern int history_main(int, char**);
+extern int geo_main(int, char**);
+extern int bench_main(int, char**);
+extern int open_main(int, char**);
+extern int showkey_main(int, char**);
+extern int say_main(int, char**);
+extern int whatsnew_main(int, char**);
+extern int device_info_main(int, char**);
+extern int blink_openurl_main(int, char**);
+extern int blink_xcall_main(int, char**);
+
+__attribute__((used)) static void* _force_link_commands[] = {
+  (void*)config_main,
+  (void*)help_main,
+  (void*)clear_main,
+  (void*)history_main,
+  (void*)geo_main,
+  (void*)bench_main,
+  (void*)open_main,
+  (void*)showkey_main,
+  (void*)say_main,
+  (void*)whatsnew_main,
+  (void*)device_info_main,
+  (void*)blink_openurl_main,
+  (void*)blink_xcall_main,
+};
 
 @import CloudKit;
 
