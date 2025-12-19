@@ -5303,7 +5303,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Blink/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Ram Shell";
+				INFOPLIST_KEY_CFBundleDisplayName = Ram;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -5351,7 +5351,7 @@
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				INFOPLIST_FILE = Blink/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Ram Shell";
+				INFOPLIST_KEY_CFBundleDisplayName = Ram;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
