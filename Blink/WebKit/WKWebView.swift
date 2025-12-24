@@ -95,6 +95,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private let _jsScrollerPath: String
   private let _handlerName: String
   private let _1fTapRecognizer = UITapGestureRecognizer()
+  private let _doubleTapRecognizer = UITapGestureRecognizer()
   private let _2fTapRecognizer = UITapGestureRecognizer()
   private let _pinchRecognizer = UIPinchGestureRecognizer()
   private let _3fTapRecognizer = UITapGestureRecognizer()
@@ -126,6 +127,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   var allRecognizers:[UIGestureRecognizer] {
     let recognizers = [
       _1fTapRecognizer,
+      _doubleTapRecognizer,
       _2fTapRecognizer,
       _3fTapRecognizer,
       _pinchRecognizer,
@@ -206,15 +208,20 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _3fTapRecognizer.numberOfTapsRequired = 1
     _3fTapRecognizer.numberOfTouchesRequired = 3
     _3fTapRecognizer.delegate = self
-    
+
     _longPressRecognizer.delegate = self
-    
+
+    _doubleTapRecognizer.numberOfTapsRequired = 2
+    _doubleTapRecognizer.numberOfTouchesRequired = 1
+    _doubleTapRecognizer.delegate = self
+
     _1fTapRecognizer.numberOfTapsRequired = 1
     _1fTapRecognizer.numberOfTouchesRequired = 1
     _1fTapRecognizer.delegate = self
     _1fTapRecognizer.addTarget(self, action: #selector(_on1fTap(_:)))
     _1fTapRecognizer.require(toFail: _3fTapRecognizer)
     _1fTapRecognizer.require(toFail: _longPressRecognizer)
+    _1fTapRecognizer.require(toFail: _doubleTapRecognizer)
     
     _2fTapRecognizer.numberOfTapsRequired = 1
     _2fTapRecognizer.numberOfTouchesRequired = 2
