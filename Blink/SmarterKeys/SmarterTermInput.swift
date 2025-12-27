@@ -95,7 +95,10 @@ class CaretHider {
   var isHardwareKB: Bool { kbView.traits.isHKBAttached }
   
   weak var device: TermDevice? = nil {
-    didSet { reportStateReset() }
+    didSet {
+      guard device !== oldValue else { return }
+      reportStateReset()
+    }
   }
   
   required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

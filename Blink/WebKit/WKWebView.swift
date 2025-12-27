@@ -242,7 +242,9 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     let point = recognizer.location(in: recognizer.view)
     switch recognizer.state {
     case .recognized:
-      
+      // Don't interfere when there's an active selection
+      if hasSelection { return }
+
       if focused {
         _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BLKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
       }
