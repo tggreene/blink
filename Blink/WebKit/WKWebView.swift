@@ -96,6 +96,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private let _handlerName: String
   private let _1fTapRecognizer = UITapGestureRecognizer()
   private let _doubleTapRecognizer = UITapGestureRecognizer()
+  private let _tripleTapRecognizer = UITapGestureRecognizer()  // 3 taps, 1 finger - for line selection
   private let _2fTapRecognizer = UITapGestureRecognizer()
   private let _pinchRecognizer = UIPinchGestureRecognizer()
   private let _3fTapRecognizer = UITapGestureRecognizer()
@@ -128,6 +129,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     let recognizers = [
       _1fTapRecognizer,
       _doubleTapRecognizer,
+      _tripleTapRecognizer,
       _2fTapRecognizer,
       _3fTapRecognizer,
       _pinchRecognizer,
@@ -211,9 +213,14 @@ class UIScrollViewWithoutHitTest: UIScrollView {
 
     _longPressRecognizer.delegate = self
 
+    _tripleTapRecognizer.numberOfTapsRequired = 3
+    _tripleTapRecognizer.numberOfTouchesRequired = 1
+    _tripleTapRecognizer.delegate = self
+
     _doubleTapRecognizer.numberOfTapsRequired = 2
     _doubleTapRecognizer.numberOfTouchesRequired = 1
     _doubleTapRecognizer.delegate = self
+    _doubleTapRecognizer.require(toFail: _tripleTapRecognizer)
 
     _1fTapRecognizer.numberOfTapsRequired = 1
     _1fTapRecognizer.numberOfTouchesRequired = 1
@@ -222,6 +229,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _1fTapRecognizer.require(toFail: _3fTapRecognizer)
     _1fTapRecognizer.require(toFail: _longPressRecognizer)
     _1fTapRecognizer.require(toFail: _doubleTapRecognizer)
+    _1fTapRecognizer.require(toFail: _tripleTapRecognizer)
     
     _2fTapRecognizer.numberOfTapsRequired = 1
     _2fTapRecognizer.numberOfTouchesRequired = 2
@@ -245,11 +253,19 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       // Don't interfere when there's an active selection
       if hasSelection { return }
 
-      if focused {
-        _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BLKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
-      }
-      if let target = _wkWebView?.target(forAction: #selector(focusOnShellAction), withSender: self) as? UIResponder {
-        target.perform(#selector(focusOnShellAction), with: self)
+      // Defer action to next run loop - gives selection events time to arrive
+      // from JS before we potentially trigger focusOnShellAction
+      DispatchQueue.main.async { [weak self] in
+        guard let self = self else { return }
+        // Re-check after deferral - selection may have been established
+        if self.hasSelection { return }
+
+        if self.focused {
+          self._wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BLKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
+        }
+        if let target = self._wkWebView?.target(forAction: #selector(self.focusOnShellAction), withSender: self) as? UIResponder {
+          target.perform(#selector(self.focusOnShellAction), with: self)
+        }
       }
     default: break
     }

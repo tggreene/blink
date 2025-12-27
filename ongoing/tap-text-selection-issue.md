@@ -96,21 +96,46 @@ func reportStateReset() {
 ```
 
 ## Status
-- [x] Fix implemented (two-pronged approach)
+- [x] Fix implemented (multi-pronged approach)
 - [ ] Fix tested
 - [ ] Committed
 
 ## Changes Made
 
-### WKWebView.swift (line 245-246)
-Added guard to prevent `_on1fTap` from calling `focusOnShellAction` when selection is active:
+### Iteration 1 (didn't fully fix)
+1. Guard in `_on1fTap` for `hasSelection`
+2. Guard in `device` didSet for `oldValue`
+
+### Iteration 2 - Additional fixes
+
+#### Problem: Race condition
+`hasSelection` might not be `true` yet when tap handler fires. The selectionchange
+event from JS takes time to propagate to native.
+
+#### Problem: Triple-tap not handled
+On triple-tap (line selection), taps 1-2 trigger double-tap recognizer, but tap 3
+starts a NEW single-tap sequence that eventually fires.
+
+#### Fixes applied:
+
+**1. Async deferral in `_on1fTap`**
+Defer the action to next run loop, giving selection events time to arrive:
 ```swift
-// Don't interfere when there's an active selection
-if hasSelection { return }
+DispatchQueue.main.async { [weak self] in
+  guard let self = self else { return }
+  if self.hasSelection { return }  // Re-check after deferral
+  // ... proceed with action
+}
 ```
 
+**2. Triple-tap recognizer**
+Added `_tripleTapRecognizer` (3 taps, 1 finger) as a dummy recognizer:
+- Single-tap requires triple-tap to fail
+- Double-tap requires triple-tap to fail
+- Prevents single-tap from firing on any tap within a triple-tap sequence
+
 ### SmarterTermInput.swift (lines 97-102)
-Added guard to prevent `reportStateReset()` from firing when device is re-set to same value:
+Guard to prevent `reportStateReset()` from firing when device is re-set to same value:
 ```swift
 weak var device: TermDevice? = nil {
   didSet {
